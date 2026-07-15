@@ -1,0 +1,92 @@
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Loading required package: zoo
+
+Attaching package: 'zoo'
+
+The following objects are masked from 'package:base':
+
+    as.Date, as.Date.numeric
+
+====================================================================== 
+H1 -- CORRELATION: GDP per capita vs. drug death rate
+====================================================================== 
+Warning message:
+In cor.test.default(df$gdp_per_capita, df$drug_death_rate, method = "spearman") :
+  Cannot compute exact p-value with ties
+Pearson  r = 0.416, p = 0.000000
+Spearman rho = 0.473, p = 0.000000
+
+======================================================================
+H2 -- GROUP CONTRAST: richer half vs. poorer half (median GDP split)
+====================================================================== 
+Richer half: n=92, mean=1.637
+Poorer half: n=93, mean=0.491
+Welch's t = 3.773, df = 103.6, p = 0.000269
+Cohen's d = 0.557
+
+======================================================================
+H3 -- ONE-WAY ANOVA: drug death rate across 6 world regions
+====================================================================== 
+             Df Sum Sq Mean Sq F value   Pr(>F)    
+owid_region   5   90.2  18.032   4.335 0.000951 ***
+Residuals   179  744.5   4.159                     
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+F(5, 179) = 4.335, p = 0.000951
+eta-squared = 0.1080 (region explains 10.8% of the variance)
+
+======================================================================
+H4 -- LINEAR REGRESSION: drug_death_rate ~ log(GDP per capita)
+====================================================================== 
+
+Call:
+lm(formula = drug_death_rate ~ log_gdp, data = df)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-2.1171 -0.9003 -0.3939  0.3817 18.1156 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  -5.3849     1.2526  -4.299 2.79e-05 ***
+log_gdp       0.6748     0.1302   5.182 5.78e-07 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 1.994 on 183 degrees of freedom
+Multiple R-squared:  0.1279,	Adjusted R-squared:  0.1232 
+F-statistic: 26.85 on 1 and 183 DF,  p-value: 5.776e-07
+
+
+Shapiro-Wilk (normality of residuals): W = 0.5644, p = 0.0000 [FAILS -- residuals not normal]
+Breusch-Pagan (constant variance):     BP = 5.3754, p = 0.0204 [FAILS -- heteroscedastic]
+(Both commonly fail here because the US is an extreme outlier --
+ see the robustness check below. The rank-based Spearman correlation
+ needs neither assumption and confirms the same direction.)
+
+======================================================================
+H5 -- ROBUSTNESS CHECK: excluding the United States
+====================================================================== 
+n with US: 185, n without US: 184
+
+WITH US      Pearson r=+0.416  Spearman rho=+0.473  t-test p=0.00027  regression R2=0.128
+Warning message:
+In cor.test.default(data$gdp_per_capita, data$drug_death_rate, method = "spearman") :
+  Cannot compute exact p-value with ties
+WITHOUT US   Pearson r=+0.440  Spearman rho=+0.465  t-test p=0.00006  regression R2=0.151
+Warning message:
+In cor.test.default(data$gdp_per_capita, data$drug_death_rate, method = "spearman") :
+  Cannot compute exact p-value with ties
+
+Done. These are the exact numbers referenced on the presentation slides.
