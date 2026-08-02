@@ -3,88 +3,56 @@
 > **A cross-country statistical analysis testing one of the most common assumptions in public health.**
 
 **Data Management & Analysis (Unit 2)**  
-Sapienza University of Rome
+**Sapienza University of Rome**
 
 **Authors**
-- Owes Mehboob (2173047)
-- Sanya Khan (2172944)
+
+- **Owes Mehboob** — 2173047
+- **Sanya Khan** — 2172944
 
 ---
 
-## Overview
+## 📖 Overview
 
-The belief that **poverty leads to drug abuse and drug-related deaths** is widespread, but surprisingly rarely tested at the country level.
+The idea that *poverty causes drug problems* is widely accepted, but surprisingly rarely tested with international data.
 
-This project examines whether national income is statistically associated with drug-use disorder mortality across **185 countries** using publicly available international datasets.
+This project investigates a simple question:
 
-Rather than relying on intuition, we evaluate the relationship using five different statistical techniques.
+> **Across countries, is national income associated with drug-use disorder mortality?**
 
-### Research Question
+Using publicly available data from the **World Health Organization (WHO)** and the **World Bank**, we analyzed **185 countries** using multiple statistical techniques to determine whether wealthier nations experience lower drug-related mortality—or whether the data tell a different story.
 
-> **Across countries, is GDP per capita associated with drug-use disorder death rates?**
-
-The analysis focuses on **2019**, the last complete pre-COVID year, and investigates **association rather than causation**.
+The study focuses on **2019**, the last complete pre-COVID year, providing a consistent snapshot before the pandemic affected health reporting worldwide.
 
 ---
 
-## Key Findings
+## 🔍 Key Findings
 
-The results consistently contradict the common assumption.
+Five independent statistical analyses were performed.
 
-Across countries:
+| Test | Result |
+|------|--------|
+| Pearson Correlation | **r = +0.414**, *p* < 0.001 |
+| Spearman Correlation | **ρ = +0.473**, *p* < 0.001 |
+| Welch Two-Sample t-test | **t = 3.77**, *p* < 0.001 |
+| One-Way ANOVA | **F(5,179) = 4.34**, *p* < 0.001 |
+| Linear Regression | **R² = 0.128**, *p* < 0.001 |
+| Robustness Check | Results remain significant after excluding the United States |
 
-- Countries with **higher GDP per capita tend to report higher drug-use disorder mortality**
-- The relationship is statistically significant across multiple methods
-- Removing the United States (an extreme outlier) does **not** change the overall conclusion
+### Main Finding
 
-This project **does not claim that wealth causes drug deaths**.
+Contrary to the common assumption, **higher-income countries report higher drug-use disorder mortality rates.**
 
-Instead, the observed pattern is consistent with factors such as:
-
-- stronger health surveillance systems in wealthier countries,
-- better mortality reporting,
-- and major regional epidemics (such as the US opioid crisis).
-
----
-
-## Statistical Methods
-
-Five independent hypotheses were tested.
-
-| Hypothesis | Method | Main Result |
-|------------|--------|-------------|
-| H1 | Pearson & Spearman Correlation | Positive correlation (p < 0.001) |
-| H2 | Welch Two-Sample t-test | Richer countries show significantly higher mortality |
-| H3 | One-Way ANOVA | Significant regional differences |
-| H4 | Linear Regression | Positive GDP coefficient (R² ≈ 0.13) |
-| H5 | Robustness Analysis | Results remain after excluding the United States |
+This project demonstrates an **association**, **not causation**. Possible explanations—including reporting capacity, surveillance quality, and the US opioid epidemic—are discussed, but not claimed as causal.
 
 ---
 
-## Dataset
-
-The final analysis combines two international datasets.
-
-| Variable | Source |
-|----------|--------|
-| Drug-use disorder deaths (per 100,000) | WHO Global Health Estimates (via Our World in Data) |
-| GDP per capita (PPP-adjusted) | World Bank World Development Indicators (via Our World in Data) |
-
-### Final Sample
-
-- **185 countries**
-- **2019 only**
-- Complete observations
-- Joined using ISO-3 country codes
-
----
-
-## Repository Structure
+## 📂 Repository Structure
 
 ```text
 .
 ├── README.md
-├── poverty_drugs_deck.pptx
+├── poverty_drugs_deck.pptx          # Final presentation
 │
 ├── data/
 │   ├── gdp-per-capita-worldbank.csv
@@ -104,63 +72,9 @@ The final analysis combines two international datasets.
 
 ---
 
-## Workflow
+## ⚙️ Reproducing the Analysis
 
-The project is fully reproducible.
-
-### Step 1 — Data Cleaning
-
-- Import raw WHO and World Bank datasets
-- Filter to sovereign countries
-- Keep observations from 2019
-- Merge by ISO-3 country code
-- Remove missing observations
-
-Output:
-
-```
-output/analysis_ready.csv
-```
-
----
-
-### Step 2 — Statistical Analysis
-
-Runs every hypothesis test:
-
-- Pearson correlation
-- Spearman correlation
-- Welch t-test
-- One-way ANOVA
-- Linear regression
-- Assumption diagnostics
-- Robustness analysis (US removed)
-
-Output:
-
-```
-output/results.txt
-```
-
----
-
-### Step 3 — Visualization
-
-Generates every figure used in the presentation.
-
-Output:
-
-```
-output/*.png
-```
-
----
-
-## Reproducing the Analysis
-
-Requires **R 4.3+**
-
-Install required packages:
+Install the required R packages:
 
 ```r
 install.packages(c(
@@ -178,93 +92,99 @@ install.packages(c(
 ))
 ```
 
-Run the scripts in order:
+Run the analysis:
 
 ```r
-setwd("scripts")
+source("scripts/01_clean_and_merge.R")
+source("scripts/02_analysis.R")
+source("scripts/03_make_charts.R")
+```
 
-source("01_clean_and_merge.R")
-source("02_analysis.R")
-source("03_make_charts.R")
+Outputs are automatically generated inside:
+
+```
+output/
 ```
 
 ---
 
-## Methodological Notes
+## 🧪 Methodology
 
-### Why only 2019?
+The workflow consists of three stages:
 
-2019 is the last year before COVID-19 substantially affected international mortality reporting, providing the most complete and comparable cross-country snapshot.
+### 1. Data Preparation
 
-### Why log-transform GDP?
+- Import WHO and World Bank datasets
+- Filter to sovereign countries
+- Restrict both datasets to **2019**
+- Merge using ISO-3 country codes
+- Remove incomplete observations
 
-GDP per capita is highly right-skewed.
+Final sample:
 
-Applying the logarithm substantially reduces skewness and produces a more suitable predictor for linear regression.
+**185 countries**
 
-### Why report both Pearson and Spearman?
+### 2. Statistical Analysis
 
-Pearson measures linear association.
+The project evaluates the relationship using:
 
-Spearman measures rank-order association and is more robust to outliers.
+- Pearson correlation
+- Spearman correlation
+- Welch's t-test
+- One-Way ANOVA
+- Linear regression
+- Regression diagnostics
+- Robustness analysis (excluding the United States)
 
-Reporting both demonstrates that the findings do not depend on a single statistical assumption.
+### 3. Visualization
 
-### Regression Diagnostics
-
-Regression assumptions were formally evaluated using:
-
-- Shapiro–Wilk test
-- Breusch–Pagan test
-
-Both indicate that the United States behaves as an influential outlier, motivating the robustness analysis performed in H5.
-
----
-
-## Limitations
-
-This is an **ecological** (country-level) study.
-
-Consequently:
-
-- Association should **not** be interpreted as causation.
-- Results cannot be generalized to individuals.
-- Differences in national reporting quality may influence observed mortality.
-- Other socioeconomic and healthcare variables were not modeled.
+All charts used in the presentation are generated directly from the analysis scripts using **ggplot2**.
 
 ---
 
-## Presentation
+## 📊 Data Sources
 
-The repository also contains the complete presentation used for the course submission.
-
-```
-poverty_drugs_deck.pptx
-```
-
-All numerical results appearing in the presentation were generated directly from the accompanying R scripts.
+| Dataset | Source |
+|---------|--------|
+| Drug-use disorder mortality | WHO Global Health Estimates (via Our World in Data) |
+| GDP per capita (PPP) | World Bank World Development Indicators (via Our World in Data) |
+| Country boundaries | Natural Earth |
 
 ---
 
-## License
+## 💻 Tech Stack
 
-This repository was created for academic purposes.
-
-The datasets remain subject to the licensing terms of their original providers (WHO, World Bank, and Our World in Data).
+- R
+- dplyr
+- ggplot2
+- sf
+- lmtest
+- patchwork
+- ggrepel
 
 ---
 
-## Acknowledgements
+## ⚠️ Limitations
 
-- World Health Organization
+- Country-level (ecological) analysis
+- Association does **not** imply causation
+- Differences in national reporting quality may influence results
+- Other socioeconomic factors were not included in the model
+
+---
+
+## 🙏 Acknowledgements
+
+This project uses publicly available datasets provided by:
+
+- World Health Organization (WHO)
 - World Bank
 - Our World in Data
 - Natural Earth
 
 ---
 
-## AI Disclosure
+## 🤖 AI Disclosure
 
-AI tools (Claude by Anthropic) were used during development for code scaffolding, figure refinement, slide design, and editorial assistance, in accordance with the course disclosure requirements.
-
-All statistical analyses, interpretation, and final conclusions were verified by the authors.
+Claude (Anthropic) was used for code scaffolding, and editorial assistance in accordance with the course disclosure requirements.
+The statistical methodology, analysis, interpretation, and conclusions presented in this repository were verified by the authors.
